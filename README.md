@@ -82,4 +82,4 @@ public class Unit
 It is used as a replacement for `void` when a value needs to be returned e.g. in an argumeent to a `Match` method whose only action is to print something out (See, for example, the first example in the "Algebraic Data Types" section).
 
 ### Pre- and Postconditions
-**This section is not written yet.**
+**This section has not been written yet.**
