@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CSFunc.AlgebraicTypes
+namespace CSFunc.Types
 {
     #region Maybe<a>
     // Maybe a = Just a | Nothing
