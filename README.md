@@ -2,8 +2,9 @@
 **All libraries and executables are avaliable from the releases tab.**
 
 CSFunc is a library that makes it possible to use functional programming techniques in C#. Features include:
-* Algebraic data types
-* Pre/postconditions
+* Algebraic data types (found in `CSFunc.Types`)
+* Other data types to support functional programming (found in `CSFunc.Types`)
+* Code Contracts (found in `CSFunc.CodeContracts`)
 
 ### Algebraic Data Types
 Algebraic data types are classes which can take one of many values, similar to enums. However, unlike enums, each value can store data. A typical example of an algebraic data type is `Maybe<a>`, which can take a value of either `Just<a>`, which represents the presence of a value of type `a`, or `Nothing`, which represents an absence of a value. CSFunc includes the following datatypes:
@@ -81,5 +82,54 @@ public class Unit
 ```
 It is used as a replacement for `void` when a value needs to be returned e.g. in an argumeent to a `Match` method whose only action is to print something out (See, for example, the first example in the "Algebraic Data Types" section).
 
-### Pre- and Postconditions
-**This section has not been written yet.**
+### Code Contracts
+CSFunc also includes a functional implementation of preconditions and postconditions, found in the `CSFunc.CodeContracts` namespace. This implementation of code contracts consists of three methods: `Requires`, `Ensures`, and `Do`. Usage is as follows:
+```csharp
+using CSFunc.CodeContracts;                               // REQUIRED
+
+T[] Add<T>(T[] array, T item) => Contracts.               // Use C# 6-style expression-bodied functions.
+    Requires<T[]>(array != null, "Array is null").        // Requires takes two arguments: a boolean expression, and an
+                                                          // error message to display if the contract is not satisfied.
+                                                          // The type argument is the return type of the method.
+    Ensures<T[]>(o => o.Contains(item), "Result does not contain item").
+                                                          // Ensures is similar to Requires, but instead of a boolean expression,
+                                                          // it takes a delegate with a single parameter, which is the output of
+                                                          // the method.
+    Do<T[]>(() =>                                         // Do takes a singe argument, which is the method body.
+    {
+        System.Collections.Generic.List<T> result = new System.Collections.Generic.List<T>(array);
+        result.Add(item);
+        return result.ToArray();
+    });
+
+        void Test()
+        {
+            int[] array = new int[] { 1, 2, 3 };
+            int[] newarray = Add(array, 4); // newarray contains 1, 2, 3, 4
+            int[] array2 = null;
+            int[] newarray2 = Add(array2, 4); // throws ContractException with message "Array is null"
+}
+```
+This is just a chain of methods; unformatted, it looks like this:
+```csharp
+T[] Add<T>(T[] array, T item) =>
+    Contracts.Requires<T[]>(array != null, "Array is null")
+    .Ensures<T[]>(o => o.Contains(item), "Result does not contain item")
+    .Do({
+          System.Collections.Generic.List<T> result = new System.Collections.Generic.List<T>(array);
+          result.Add(item);
+          return result.ToArray();
+        });
+```
+However, I prefer to format it like this:
+```csharp
+T[] Add<T>(T[] array, T item) => Contracts.
+    Requires<T[]>(array != null, "Array is null").
+    Ensures<T[]>(o => o.Contains(item), "Result does not contain item").
+    Do(
+    {
+      System.Collections.Generic.List<T> result = new System.Collections.Generic.List<T>(array);
+      result.Add(item);
+      return result.ToArray();
+    });
+```
