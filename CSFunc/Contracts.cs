@@ -10,51 +10,31 @@ namespace CSFunc.CodeContracts
 {
     public static class Contracts
     {
-        public static ImmutableList<ContractInputPredicate> Requires(this ImmutableList<ContractInputPredicate> prev,
-                                                                                    bool pred,
-                                                                                    string message) =>
-            prev.Add(new ContractInputPredicate(pred, message));
+        public static Tuple<ImmutableList<ContractInputPredicate>, ImmutableList<ContractOutputPredicate<T>>> Requires<T>(bool pred, string message) =>
+            Tuple.Create(ImmutableList<ContractInputPredicate>.Empty.Add(new ContractInputPredicate(pred, message)), ImmutableList<ContractOutputPredicate<T>>.Empty);
 
-        public static ImmutableList<ContractInputPredicate> Requires(bool pred, string message) =>
-            ImmutableList<ContractInputPredicate>.Empty.Add(new ContractInputPredicate(pred, message));
+        public static Tuple<ImmutableList<ContractInputPredicate>, ImmutableList<ContractOutputPredicate<T>>> Requires<T>(
+                    this Tuple<ImmutableList<ContractInputPredicate>, ImmutableList<ContractOutputPredicate<T>>> prev,
+                    bool pred,
+                    string message) =>
+            Tuple.Create(prev.Item1.Add(new ContractInputPredicate(pred, message)), prev.Item2);
 
-        public static ImmutableList<Tuple<ContractOutputPredicate<T>, string>> Ensures<T>(
-            this ImmutableList<Tuple<ContractOutputPredicate<T>, string>> prev, ContractOutputPredicate<T> pred, string message) =>
-                prev.Add(Tuple.Create(pred, message));
+        public static Tuple<ImmutableList<ContractInputPredicate>, ImmutableList<ContractOutputPredicate<T>>> Ensures<T>(
+                    this Tuple<ImmutableList<ContractInputPredicate>, ImmutableList<ContractOutputPredicate<T>>> prev,
+                    ContractOutputPredicate<T>.ContractOutputPredicateDelegate pred,
+                    string message) =>
+                Tuple.Create(prev.Item1, prev.Item2.Add(new ContractOutputPredicate<T>(pred, message)));
 
-        public static ImmutableList<Either<ContractInputPredicate, Tuple<ContractOutputPredicate<T>, string>>> Ensures<T>(
-            this ImmutableList<ContractInputPredicate> prev, ContractOutputPredicate<T> pred, string message) =>
-                prev.Select(cip => Either<ContractInputPredicate, Tuple<ContractOutputPredicate<T>, string>>.Left(cip))
-                    .ToImmutableList()
-                    .Add(Either<ContractInputPredicate, Tuple<ContractOutputPredicate<T>, string>>.Right(Tuple.Create(pred, message)));
-
-        public static T Do<T>(this ImmutableList<Either<ContractInputPredicate, Tuple<ContractOutputPredicate<T>, string>>> contracts, Func<T> f)
+        public static T Do<T>(this Tuple<ImmutableList<ContractInputPredicate>, ImmutableList<ContractOutputPredicate<T>>> contracts, Func<T> f)
         {
+            foreach (ContractInputPredicate cip in contracts.Item1) if (!cip.Value) throw new ContractException(cip.Message);
             T result = f();
-            bool satisfied = true;
-            foreach (var contract in contracts)
-            {
-                contract.Match
-                (
-                    Left: cip =>
-                    {
-                        satisfied = satisfied && cip.Value;
-                        if (!satisfied) throw new ContractException(cip.Message);
-                        return Unit.Nil;
-                    },
-                    Right: cop =>
-                    {
-                        satisfied = satisfied && cop.Item1(result);
-                        if (!satisfied) throw new ContractException(cop.Item2);
-                        return Unit.Nil;
-                    }
-                );
-            }
+            foreach (ContractOutputPredicate<T> cop in contracts.Item2) if (!cop.Value(result)) throw new ContractException(cop.Message);
             return result;
         }
 
-        public delegate bool ContractOutputPredicate<T>(T output);
         public struct ContractInputPredicate { public bool Value { get; set; } public string Message { get; set; } public ContractInputPredicate(bool value, string message) { Value = value;  Message = message; } }
+        public struct ContractOutputPredicate<T> { public delegate bool ContractOutputPredicateDelegate(T output); public ContractOutputPredicateDelegate Value { get; set; } public string Message { get; set; } public ContractOutputPredicate(ContractOutputPredicateDelegate value, string message) { Value = value; Message = message; } }
     }
 
     public class ContractException : Exception
