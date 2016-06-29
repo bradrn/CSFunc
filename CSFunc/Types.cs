@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AlgebraicTypes
+namespace CSFunc.AlgebraicTypes
 {
     #region Maybe<a>
     // Maybe a = Just a | Nothing
@@ -193,7 +193,7 @@ namespace AlgebraicTypes
     }
     #endregion
 
-    #region Error<a, b>
+    #region Error<TResult, TError>
     // Error TResult TError = Result TResult | Throw TError
     public class Error<TResult, TError>
     {

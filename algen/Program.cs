@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using AlgebraicTypes;
-using CodeContracts;
+using CSFunc.AlgebraicTypes;
 
 namespace Algebraic_Type_Test
 {

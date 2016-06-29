@@ -4,9 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AlgebraicTypes
+namespace CSFunc.Prelude
 {
-    public static class Prelude
-    {
-    }
 }

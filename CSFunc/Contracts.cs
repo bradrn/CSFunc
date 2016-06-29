@@ -4,9 +4,9 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using AlgebraicTypes;
+using CSFunc.AlgebraicTypes;
 
-namespace CodeContracts
+namespace CSFunc.CodeContracts
 {
     public static class Contracts
     {
