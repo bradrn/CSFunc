@@ -19,6 +19,9 @@ namespace CSFunc.CodeContracts
                     string message) =>
             Tuple.Create(prev.Item1.Add(new ContractInputPredicate(pred, message)), prev.Item2);
 
+        public static Tuple<ImmutableList<ContractInputPredicate>, ImmutableList<ContractOutputPredicate<T>>> Ensures<T>(ContractOutputPredicate<T>.ContractOutputPredicateDelegate pred, string message) =>
+            Tuple.Create(ImmutableList<ContractInputPredicate>.Empty, ImmutableList<ContractOutputPredicate<T>>.Empty.Add(new ContractOutputPredicate<T>(pred, message)));
+
         public static Tuple<ImmutableList<ContractInputPredicate>, ImmutableList<ContractOutputPredicate<T>>> Ensures<T>(
                     this Tuple<ImmutableList<ContractInputPredicate>, ImmutableList<ContractOutputPredicate<T>>> prev,
                     ContractOutputPredicate<T>.ContractOutputPredicateDelegate pred,
