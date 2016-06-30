@@ -7,8 +7,8 @@
     <ProjectGuid>{16478188-4B02-4E6B-8300-C16DB5826530}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>AlgebraicTypes</RootNamespace>
-    <AssemblyName>AlgebraicTypes</AssemblyName>
+    <RootNamespace>CSFunc</RootNamespace>
+    <AssemblyName>CSFunc</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

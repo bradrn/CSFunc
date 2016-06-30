@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CSFunc.Types;
 
-namespace Algebraic_Type_Test
+namespace algen
 {
     class Program
     {
